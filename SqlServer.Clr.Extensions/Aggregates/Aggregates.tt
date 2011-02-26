@@ -26,18 +26,15 @@ namespace SqlServer.Clr.Extensions.Aggregates
 
         foreach (System.Text.RegularExpressions.Match m in matches)
         {
-			var types = m.Groups["type"].Value.Split(',');
-			var inputType = types[0].Trim();
-			var resultType = types.Length == 2 ? types[1].Trim() : inputType;
+			var type = m.Groups["type"].Value;
 			var name = m.Groups["name"].Value;
-			string sqlInputType = "Sql" + inputType;
-			string sqlResultType = "Sql" + resultType;
+			string sqltype = "Sql" + type;
 #>
     [Serializable]
     [SqlUserDefinedAggregate(Format.UserDefined, MaxByteSize = 8000)]
     public class <#= name #> : IBinarySerialize
     {
-        private IUserDefinedAggregate<<#= inputType #>, <#= resultType #>> _impl;
+        private IUserDefinedAggregate<<#= type #>> _impl;
 
         public <#= name #>()
         {
@@ -49,7 +46,7 @@ namespace SqlServer.Clr.Extensions.Aggregates
             _impl = UserDefinedAggregates.<#= name #>();
         }
 
-        public void Accumulate(<#= sqlInputType #> value)
+        public void Accumulate(<#= sqltype #> value)
         {
             _impl.Accumulate(value.Value);
         }
@@ -59,16 +56,16 @@ namespace SqlServer.Clr.Extensions.Aggregates
             _impl.Merge(value._impl);
         }
 
-        public <#= sqlResultType #> Terminate()
+        public <#= sqltype #> Terminate()
         {
-            return new <#= sqlResultType #>(_impl.Terminate());
+            return new <#= sqltype #>(_impl.Terminate());
         }
 
         public void Read(BinaryReader r)
         {
             _impl.Read(r);
         }
- 
+
         public void Write(BinaryWriter w)
         {
             _impl.Write(w);
