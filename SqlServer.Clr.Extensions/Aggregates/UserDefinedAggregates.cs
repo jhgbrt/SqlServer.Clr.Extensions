@@ -36,23 +36,5 @@ namespace SqlServer.Clr.Extensions.Aggregates
         {
             return new AccumulatingAggregationImpl<T>(seed, accumulate);
         }
-
-        public static void test()
-        {
-            var filename = @"C:\Users\Jeroen\Documents\Visual Studio 2010\Projects\SqlServer.Clr.Extensions\SqlServer.Clr.Extensions\Aggregates\UserDefinedAggregates.cs";
-
-            var text = System.IO.File.ReadAllText(filename);
-
-            var pattern = @"public static IUserDefinedAggregate\< *(?<type>.*) *\> *(?<name>.*)\(\)";
-
-            var matches = System.Text.RegularExpressions.Regex.Matches(text, pattern);
-
-            foreach (System.Text.RegularExpressions.Match m in matches)
-            {
-                Console.WriteLine(m.Groups["type"].Value);
-                Console.WriteLine(m.Groups["name"].Value);
-            }
-
-        }
     }
 }
