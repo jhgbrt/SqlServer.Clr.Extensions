@@ -10,7 +10,7 @@ namespace SqlServer.Clr.Extensions.Aggregates
     /// Provided that certain conditions are met, adding another aggregate function should come down to simply adding
     /// a single function to this class. The function should return an IUserDefinedAggregate[T, TResult] where T is a primitive type
     /// that has an equivalent Sql type (e.g. Int64 corresponds to SqlInt64). 
-    /// expression.
+    /// You need to use the 'clr notation' (Int64 instead of long) in order to make the Aggregates.tt file work.
     /// </summary>
     internal static class UserDefinedAggregates
     {

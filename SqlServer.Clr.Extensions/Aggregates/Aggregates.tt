@@ -2,9 +2,9 @@
 <#
 	// this template parses the file UserDefinedAggregates.cs
 	// functions of the format below are used to generate a Sql CLR aggregate function:
-	//    public static IUserDefinedAggregate<[ClrType]> [FunctionName]() 
+	//    public static IUserDefinedAggregate<[InputType], [ResultType]> [FunctionName]() 
 
-	// The ClrType must have a corresponding Sql type with the same name prefixed with "Sql"
+	// The used types must have a corresponding Sql type with the same name prefixed with "Sql"
 	// One should use the clr notation in the function prototype.
 #>
 using System;
