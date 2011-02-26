@@ -1,29 +1,36 @@
 ﻿using System;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace SqlServer.Clr.Extensions.Aggregates
 {
+    /// <summary>
+    /// This class contains the definition for all user-defined aggregates.
+    /// Provided that certain conditions are met, adding another aggregate function should come down to simply adding
+    /// a single function to this class. The function should return an IUserDefinedAggregate[T] where T is a primitive type
+    /// that has an equivalent Sql type (e.g. Int64 corresponds to SqlInt64). 
+    /// In the implementation, return an instance of UserDefinedAggregate[T], with the aggregation function as a lambda
+    /// expression.
+    /// </summary>
     internal static class UserDefinedAggregates
     {
         public static IUserDefinedAggregate<String> StrConcat()
         {
-            return new UserDefinedAggregate<string>(
-                values => string.Join(",", values.ToArray())
+            return new AccumulatingAggregationImpl<string>(
+                s => s,
+                (i,j) => i + "," + j
                 );
         }
 
         public static IUserDefinedAggregate<Int64> BitwiseAnd()
         {
-            return new UserDefinedAggregate<long>(
-                values => values.Aggregate(long.MaxValue, (i,j) => i & j)
+            return new AccumulatingAggregationImpl<long>(
+                0xFFFFFFFFFFFFFFFL, (i, j) => i & j
                 );
         }
 
         public static IUserDefinedAggregate<Int64> BitwiseOr()
         {
-            return new UserDefinedAggregate<long>(
-                values => values.Aggregate(long.MaxValue, (i, j) => i | j)
+            return new AccumulatingAggregationImpl<long>(
+                0L, (i, j) => i | j
                 );
         }
 

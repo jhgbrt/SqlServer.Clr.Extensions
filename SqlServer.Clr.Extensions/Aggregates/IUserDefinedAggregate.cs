@@ -7,7 +7,6 @@ namespace SqlServer.Clr.Extensions.Aggregates
     {
         void Accumulate(T value);
         void Merge(IUserDefinedAggregate<T> value);
-        IEnumerable<T> Values { get; }
         T Terminate();
         void Read(BinaryReader binaryReader);
         void Write(BinaryWriter binaryWriter);

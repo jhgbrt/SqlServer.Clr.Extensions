@@ -4,14 +4,18 @@ using System.IO;
 
 namespace SqlServer.Clr.Extensions.Aggregates
 {
-    internal class UserDefinedAggregate<T> : IUserDefinedAggregate<T>
+    internal class CollectingAggregationImpl<T> : IUserDefinedAggregate<T>
     {
         private List<T> _values = new List<T>();
 
         private readonly Func<IEnumerable<T>, T> _aggregateFunction;
         private static readonly BinaryHelper<T> Helper = BinaryHelpers.Create<T>();
 
-        public UserDefinedAggregate(Func<IEnumerable<T>, T> aggregateFunction)
+        /// <summary>
+        /// UserDefinedAggregate constructor.
+        /// </summary>
+        /// <param name="aggregateFunction">A lambda expression that calculates the aggregated value from a list of values.</param>
+        public CollectingAggregationImpl(Func<IEnumerable<T>, T> aggregateFunction)
         {
             _aggregateFunction = aggregateFunction;
         }
@@ -23,12 +27,8 @@ namespace SqlServer.Clr.Extensions.Aggregates
 
         public void Merge(IUserDefinedAggregate<T> value)
         {
-            _values.AddRange(value.Values);
-        }
-
-        public IEnumerable<T> Values
-        {
-            get { return _values; }
+            var casted = (CollectingAggregationImpl<T>) value;
+            _values.AddRange(casted._values);
         }
 
         public T Terminate()
