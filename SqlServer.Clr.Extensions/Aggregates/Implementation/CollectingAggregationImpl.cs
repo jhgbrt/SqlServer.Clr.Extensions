@@ -4,18 +4,17 @@ using System.IO;
 
 namespace SqlServer.Clr.Extensions.Aggregates.Implementation
 {
-    internal class CollectingAggregationImpl<T> : IUserDefinedAggregate<T>
+    internal class CollectingAggregationImpl<T, TResult> : IUserDefinedAggregate<T, TResult>
     {
         private List<T> _values = new List<T>();
-
-        private readonly Func<IEnumerable<T>, T> _aggregateFunction;
+        private readonly Func<IEnumerable<T>, TResult> _aggregateFunction;
         private static readonly SerializationHelper<T> Helper = SerializationHelper.Create<T>();
 
         /// <summary>
         /// constructor.
         /// </summary>
         /// <param name="aggregateFunction">A lambda expression that calculates the aggregated value from a list of values.</param>
-        public CollectingAggregationImpl(Func<IEnumerable<T>, T> aggregateFunction)
+        public CollectingAggregationImpl(Func<IEnumerable<T>, TResult> aggregateFunction)
         {
             _aggregateFunction = aggregateFunction;
         }
@@ -25,13 +24,13 @@ namespace SqlServer.Clr.Extensions.Aggregates.Implementation
             _values.Add(value);
         }
 
-        public void Merge(IUserDefinedAggregate<T> value)
+        public void Merge(IUserDefinedAggregate<T, TResult> value)
         {
-            var casted = (CollectingAggregationImpl<T>) value;
+            var casted = (CollectingAggregationImpl<T, TResult>) value;
             _values.AddRange(casted._values);
         }
 
-        public T Terminate()
+        public TResult Terminate()
         {
             return _aggregateFunction(_values);
         }

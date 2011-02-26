@@ -11,7 +11,6 @@ namespace SqlServer.Clr.Extensions.Aggregates.Implementation
     internal class AccumulatingAggregationImpl<T> : IUserDefinedAggregate<T>
     {
         private T _aggregatedValue;
-
         private Func<T, T> _seed;
         private readonly Func<T, T, T> _accumulate;
         private static readonly SerializationHelper<T> Helper = SerializationHelper.Create<T>();
@@ -45,7 +44,7 @@ namespace SqlServer.Clr.Extensions.Aggregates.Implementation
             }
         }
 
-        public void Merge(IUserDefinedAggregate<T> value)
+        public void Merge(IUserDefinedAggregate<T, T> value)
         {
             var casted = (AccumulatingAggregationImpl<T>) value;
             _aggregatedValue = _accumulate(_aggregatedValue, casted._aggregatedValue);

@@ -8,9 +8,50 @@ namespace SqlServer.Clr.Extensions.Aggregates
 {
     [Serializable]
     [SqlUserDefinedAggregate(Format.UserDefined, MaxByteSize = 8000)]
+    public class Avg : IBinarySerialize
+    {
+        private IUserDefinedAggregate<Int64, Decimal> _impl;
+
+        public Avg()
+        {
+            Init();
+        }
+
+        public void Init()
+        {
+            _impl = UserDefinedAggregates.Avg();
+        }
+
+        public void Accumulate(SqlInt64 value)
+        {
+            _impl.Accumulate(value.Value);
+        }
+
+        public void Merge(Avg value)
+        {
+            _impl.Merge(value._impl);
+        }
+
+        public SqlDecimal Terminate()
+        {
+            return new SqlDecimal(_impl.Terminate());
+        }
+
+        public void Read(BinaryReader r)
+        {
+            _impl.Read(r);
+        }
+ 
+        public void Write(BinaryWriter w)
+        {
+            _impl.Write(w);
+        }
+    }
+    [Serializable]
+    [SqlUserDefinedAggregate(Format.UserDefined, MaxByteSize = 8000)]
     public class StrConcat : IBinarySerialize
     {
-        private IUserDefinedAggregate<String> _impl;
+        private IUserDefinedAggregate<String, String> _impl;
 
         public StrConcat()
         {
@@ -41,7 +82,7 @@ namespace SqlServer.Clr.Extensions.Aggregates
         {
             _impl.Read(r);
         }
-
+ 
         public void Write(BinaryWriter w)
         {
             _impl.Write(w);
@@ -51,7 +92,7 @@ namespace SqlServer.Clr.Extensions.Aggregates
     [SqlUserDefinedAggregate(Format.UserDefined, MaxByteSize = 8000)]
     public class BitwiseAnd : IBinarySerialize
     {
-        private IUserDefinedAggregate<Int64> _impl;
+        private IUserDefinedAggregate<Int64, Int64> _impl;
 
         public BitwiseAnd()
         {
@@ -82,7 +123,7 @@ namespace SqlServer.Clr.Extensions.Aggregates
         {
             _impl.Read(r);
         }
-
+ 
         public void Write(BinaryWriter w)
         {
             _impl.Write(w);
@@ -92,7 +133,7 @@ namespace SqlServer.Clr.Extensions.Aggregates
     [SqlUserDefinedAggregate(Format.UserDefined, MaxByteSize = 8000)]
     public class BitwiseOr : IBinarySerialize
     {
-        private IUserDefinedAggregate<Int64> _impl;
+        private IUserDefinedAggregate<Int64, Int64> _impl;
 
         public BitwiseOr()
         {
@@ -123,7 +164,7 @@ namespace SqlServer.Clr.Extensions.Aggregates
         {
             _impl.Read(r);
         }
-
+ 
         public void Write(BinaryWriter w)
         {
             _impl.Write(w);
