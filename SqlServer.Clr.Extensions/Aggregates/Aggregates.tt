@@ -1,0 +1,77 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#
+	// this template parses the file UserDefinedAggregates.cs
+	// functions of the format below are used to generate a Sql CLR aggregate function:
+	//    public static IUserDefinedAggregate<[ClrType]> [FunctionName]() 
+
+	// The ClrType must have a corresponding Sql type with the same name prefixed with "Sql"
+	// One should use the clr notation in the function prototype.
+#>
+using System;
+using System.Data.SqlTypes;
+using System.IO;
+using Microsoft.SqlServer.Server;
+
+namespace SqlServer.Clr.Extensions.Aggregates
+{
+<# 
+		var root = Host.ResolvePath("");
+		var filename = System.IO.Path.Combine(root, "UserDefinedAggregates.cs");
+		var text = System.IO.File.ReadAllText(filename); 
+
+		var pattern = @"public static IUserDefinedAggregate\< *(?<type>.*) *\> *(?<name>.*)\(\)";
+
+        var matches = System.Text.RegularExpressions.Regex.Matches(text, pattern);
+
+        foreach (System.Text.RegularExpressions.Match m in matches)
+        {
+			var type = m.Groups["type"].Value;
+			var name = m.Groups["name"].Value;
+			string sqltype = "Sql" + type;
+#>
+    [Serializable]
+    [SqlUserDefinedAggregate(Format.UserDefined, MaxByteSize = 8000)]
+    public class <#= name #> : IBinarySerialize
+    {
+        private IUserDefinedAggregate<<#= type #>> _impl;
+
+        public <#= name #>()
+        {
+            Init();
+        }
+
+        public void Init()
+        {
+            _impl = UserDefinedAggregates.<#= name #>();
+        }
+
+        public void Accumulate(<#= sqltype #> value)
+        {
+            _impl.Accumulate(value.Value);
+        }
+
+        public void Merge(<#= name #> value)
+        {
+            _impl.Merge(value._impl);
+        }
+
+        public <#= sqltype #> Terminate()
+        {
+            return new <#= sqltype #>(_impl.Terminate());
+        }
+
+        public void Read(BinaryReader r)
+        {
+            _impl.Read(r);
+        }
+
+        public void Write(BinaryWriter w)
+        {
+            _impl.Write(w);
+        }
+    }
+<#
+		}
+
+	#>
+}
