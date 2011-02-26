@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace SqlServer.Clr.Extensions.Aggregates
+namespace SqlServer.Clr.Extensions.Aggregates.Implementation
 {
     internal class CollectingAggregationImpl<T> : IUserDefinedAggregate<T>
     {
         private List<T> _values = new List<T>();
 
         private readonly Func<IEnumerable<T>, T> _aggregateFunction;
-        private static readonly BinaryHelper<T> Helper = BinaryHelpers.Create<T>();
+        private static readonly SerializationHelper<T> Helper = SerializationHelper.Create<T>();
 
         /// <summary>
-        /// UserDefinedAggregate constructor.
+        /// constructor.
         /// </summary>
         /// <param name="aggregateFunction">A lambda expression that calculates the aggregated value from a list of values.</param>
         public CollectingAggregationImpl(Func<IEnumerable<T>, T> aggregateFunction)
@@ -42,7 +42,7 @@ namespace SqlServer.Clr.Extensions.Aggregates
             _values = new List<T>(itemCount);
             for (int i = 0; i <= itemCount - 1; i++)
             {
-                _values.Add(Helper.BinaryRead(r));
+                _values.Add(Helper.Read(r));
             }
         }
 
@@ -51,7 +51,7 @@ namespace SqlServer.Clr.Extensions.Aggregates
             w.Write(_values.Count);
             foreach (var item in _values)
             {
-                Helper.BinaryWrite(w, item);
+                Helper.Write(w, item);
             }
 
         }

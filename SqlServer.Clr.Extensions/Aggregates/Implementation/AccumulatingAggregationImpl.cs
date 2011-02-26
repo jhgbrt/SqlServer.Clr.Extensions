@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SqlServer.Clr.Extensions.Aggregates
+namespace SqlServer.Clr.Extensions.Aggregates.Implementation
 {
     /// <summary>
     /// Implementation that calculates the aggregate value 'on the fly'. Can be used for aggregations where
@@ -14,7 +14,7 @@ namespace SqlServer.Clr.Extensions.Aggregates
 
         private Func<T, T> _seed;
         private readonly Func<T, T, T> _accumulate;
-        private static readonly BinaryHelper<T> Helper = BinaryHelpers.Create<T>();
+        private static readonly SerializationHelper<T> Helper = SerializationHelper.Create<T>();
 
         public AccumulatingAggregationImpl(
             T seed,
@@ -58,12 +58,12 @@ namespace SqlServer.Clr.Extensions.Aggregates
 
         public void Read(BinaryReader binaryReader)
         {
-            _aggregatedValue = Helper.BinaryRead(binaryReader);
+            _aggregatedValue = Helper.Read(binaryReader);
         }
 
         public void Write(BinaryWriter binaryWriter)
         {
-            Helper.BinaryWrite(binaryWriter, _aggregatedValue);
+            Helper.Write(binaryWriter, _aggregatedValue);
         }
     }
 }

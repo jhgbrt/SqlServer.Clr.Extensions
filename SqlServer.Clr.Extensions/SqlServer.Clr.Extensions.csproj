@@ -46,10 +46,9 @@
       <DependentUpon>Aggregates.tt</DependentUpon>
     </Compile>
     <Compile Include="Aggregates\Implementation\AccumulatingAggregationImpl.cs" />
-    <Compile Include="Aggregates\Implementation\BinaryHelper.cs" />
-    <Compile Include="Aggregates\Implementation\BinaryHelpers.cs" />
+    <Compile Include="Aggregates\Implementation\SerializationHelper.cs" />
     <Compile Include="Aggregates\Implementation\CollectingAggregationImpl.cs" />
-    <Compile Include="Aggregates\IUserDefinedAggregate.cs" />
+    <Compile Include="Aggregates\Implementation\IUserDefinedAggregate.cs" />
     <Compile Include="Aggregates\UserDefinedAggregates.cs" />
     <Compile Include="Functions\Functions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
