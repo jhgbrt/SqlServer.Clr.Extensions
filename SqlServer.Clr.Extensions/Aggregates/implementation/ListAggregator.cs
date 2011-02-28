@@ -4,7 +4,7 @@ using System.IO;
 
 namespace SqlServer.Clr.Extensions.Aggregates.Implementation
 {
-    internal class CollectingAggregationImpl<T> : IUserDefinedAggregate<T>
+    internal class ListAggregator<T> : IAggregator<T>
     {
         private List<T> _values = new List<T>();
 
@@ -15,19 +15,19 @@ namespace SqlServer.Clr.Extensions.Aggregates.Implementation
         /// constructor.
         /// </summary>
         /// <param name="aggregateFunction">A lambda expression that calculates the aggregated value from a list of values.</param>
-        public CollectingAggregationImpl(Func<IEnumerable<T>, T> aggregateFunction)
+        public ListAggregator(Func<IEnumerable<T>, T> aggregateFunction)
         {
             _aggregateFunction = aggregateFunction;
         }
 
-        public void Accumulate(T value)
+        public void Accumulate(T value, NotUsed parameters)
         {
             _values.Add(value);
         }
 
-        public void Merge(IUserDefinedAggregate<T> value)
+        public void Merge(IAggregator value)
         {
-            var casted = (CollectingAggregationImpl<T>) value;
+            var casted = (ListAggregator<T>) value;
             _values.AddRange(casted._values);
         }
 

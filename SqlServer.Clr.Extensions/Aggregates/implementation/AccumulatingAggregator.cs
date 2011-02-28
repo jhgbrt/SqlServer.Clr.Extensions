@@ -8,7 +8,7 @@ namespace SqlServer.Clr.Extensions.Aggregates.Implementation
     /// the complete list of values is not needed to calculate the end result (e.g. sum, min, max). 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal class AccumulatingAggregationImpl<T> : IUserDefinedAggregate<T>
+    internal class AccumulatingAggregator<T> : IAggregator<T>
     {
         private T _aggregatedValue;
 
@@ -16,7 +16,7 @@ namespace SqlServer.Clr.Extensions.Aggregates.Implementation
         private readonly Func<T, T, T> _accumulate;
         private static readonly SerializationHelper<T> Helper = SerializationHelper.Create<T>();
 
-        public AccumulatingAggregationImpl(
+        public AccumulatingAggregator(
             T seed,
             Func<T, T, T> accumulate)
         {
@@ -24,7 +24,7 @@ namespace SqlServer.Clr.Extensions.Aggregates.Implementation
             _accumulate = accumulate;
         }
 
-        public AccumulatingAggregationImpl(
+        public AccumulatingAggregator(
             Func<T,T> seed,
             Func<T, T, T> accumulate)
         {
@@ -32,7 +32,7 @@ namespace SqlServer.Clr.Extensions.Aggregates.Implementation
             _accumulate = accumulate;
         }
 
-        public void Accumulate(T value)
+        public void Accumulate(T value, NotUsed parameters)
         {
             if (_seed != null)
             {
@@ -45,9 +45,9 @@ namespace SqlServer.Clr.Extensions.Aggregates.Implementation
             }
         }
 
-        public void Merge(IUserDefinedAggregate<T> value)
+        public void Merge(IAggregator value)
         {
-            var casted = (AccumulatingAggregationImpl<T>) value;
+            var casted = (AccumulatingAggregator<T>) value;
             _aggregatedValue = _accumulate(_aggregatedValue, casted._aggregatedValue);
         }
 

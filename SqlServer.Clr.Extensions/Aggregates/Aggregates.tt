@@ -6,7 +6,7 @@
 
 	// The used types must have a corresponding Sql type with the same name prefixed with "Sql"
 	// One should use the clr notation in the function prototype.
-#>
+#>/*
 using System;
 using System.Data.SqlTypes;
 using System.IO;
@@ -26,12 +26,14 @@ namespace SqlServer.Clr.Extensions.Aggregates
 
         foreach (System.Text.RegularExpressions.Match m in matches)
         {
-			var type = m.Groups["type"].Value;
+			var type = m.Groups["type"].Value.Split(',')[0].Trim();
 			var name = m.Groups["name"].Value;
 			string sqltype = "Sql" + type;
 #>
     [Serializable]
-    [SqlUserDefinedAggregate(Format.UserDefined, MaxByteSize = 8000)]
+    [SqlUserDefinedAggregate(
+		Format.UserDefined, 
+		MaxByteSize = -1)]
     public class <#= name #> : IBinarySerialize
     {
         private IUserDefinedAggregate<<#= type #>> _impl;
@@ -48,7 +50,8 @@ namespace SqlServer.Clr.Extensions.Aggregates
 
         public void Accumulate(<#= sqltype #> value)
         {
-            _impl.Accumulate(value.Value);
+            if (value.IsNull) return;
+            _impl.Accumulate(value.Value, new NotUsed());
         }
 
         public void Merge(<#= name #> value)
@@ -76,3 +79,4 @@ namespace SqlServer.Clr.Extensions.Aggregates
 
 	#>
 }
+*/

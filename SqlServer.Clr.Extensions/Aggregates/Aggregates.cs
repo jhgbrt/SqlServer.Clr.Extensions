@@ -7,10 +7,15 @@ using SqlServer.Clr.Extensions.Aggregates.Implementation;
 namespace SqlServer.Clr.Extensions.Aggregates
 {
     [Serializable]
-    [SqlUserDefinedAggregate(Format.UserDefined, MaxByteSize = 8000)]
+    [SqlUserDefinedAggregate(
+        Format.UserDefined,
+        IsInvariantToDuplicates = false,
+        IsInvariantToNulls = true,
+        IsInvariantToOrder = true,
+        MaxByteSize = -1)]
     public class Average : IBinarySerialize
     {
-        private IUserDefinedAggregate<Decimal> _impl;
+        private IAggregator<Decimal> _impl;
 
         public Average()
         {
@@ -24,7 +29,8 @@ namespace SqlServer.Clr.Extensions.Aggregates
 
         public void Accumulate(SqlDecimal value)
         {
-            _impl.Accumulate(value.Value);
+            if (value.IsNull) return;
+            _impl.Accumulate(value.Value, new NotUsed());
         }
 
         public void Merge(Average value)
@@ -48,10 +54,15 @@ namespace SqlServer.Clr.Extensions.Aggregates
         }
     }
     [Serializable]
-    [SqlUserDefinedAggregate(Format.UserDefined, MaxByteSize = 8000)]
+    [SqlUserDefinedAggregate(
+        Format.UserDefined,
+        IsInvariantToDuplicates = false,
+        IsInvariantToNulls = true,
+        IsInvariantToOrder = false,
+        MaxByteSize = -1)]
     public class StrConcat : IBinarySerialize
     {
-        private IUserDefinedAggregate<String> _impl;
+        private IAggregator<String, String> _impl;
 
         public StrConcat()
         {
@@ -63,9 +74,10 @@ namespace SqlServer.Clr.Extensions.Aggregates
             _impl = UserDefinedAggregates.StrConcat();
         }
 
-        public void Accumulate(SqlString value)
+        public void Accumulate(SqlString value, SqlString delimiter)
         {
-            _impl.Accumulate(value.Value);
+            if (value.IsNull) return;
+            _impl.Accumulate(value.Value, delimiter.IsNull ? "," : delimiter.Value);
         }
 
         public void Merge(StrConcat value)
@@ -89,10 +101,15 @@ namespace SqlServer.Clr.Extensions.Aggregates
         }
     }
     [Serializable]
-    [SqlUserDefinedAggregate(Format.UserDefined, MaxByteSize = 8000)]
+    [SqlUserDefinedAggregate(
+        Format.UserDefined,
+        IsInvariantToDuplicates = true,
+        IsInvariantToNulls = true,
+        IsInvariantToOrder = true,
+        MaxByteSize = -1)]
     public class BitwiseAnd : IBinarySerialize
     {
-        private IUserDefinedAggregate<Int64> _impl;
+        private IAggregator<Int64> _impl;
 
         public BitwiseAnd()
         {
@@ -106,7 +123,8 @@ namespace SqlServer.Clr.Extensions.Aggregates
 
         public void Accumulate(SqlInt64 value)
         {
-            _impl.Accumulate(value.Value);
+            if (value.IsNull) return;
+            _impl.Accumulate(value.Value, new NotUsed());
         }
 
         public void Merge(BitwiseAnd value)
@@ -130,10 +148,15 @@ namespace SqlServer.Clr.Extensions.Aggregates
         }
     }
     [Serializable]
-    [SqlUserDefinedAggregate(Format.UserDefined, MaxByteSize = 8000)]
+    [SqlUserDefinedAggregate(
+        Format.UserDefined,
+        IsInvariantToDuplicates = true,
+        IsInvariantToNulls = true,
+        IsInvariantToOrder = true,
+        MaxByteSize = -1)]
     public class BitwiseOr : IBinarySerialize
     {
-        private IUserDefinedAggregate<Int64> _impl;
+        private IAggregator<Int64> _impl;
 
         public BitwiseOr()
         {
@@ -147,7 +170,8 @@ namespace SqlServer.Clr.Extensions.Aggregates
 
         public void Accumulate(SqlInt64 value)
         {
-            _impl.Accumulate(value.Value);
+            if (value.IsNull) return;
+            _impl.Accumulate(value.Value, new NotUsed());
         }
 
         public void Merge(BitwiseOr value)

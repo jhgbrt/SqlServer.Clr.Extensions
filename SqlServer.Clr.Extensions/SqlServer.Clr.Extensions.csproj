@@ -32,6 +32,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.5.9.10348\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.mocks">
+      <HintPath>..\packages\NUnit.2.5.9.10348\lib\nunit.mocks.dll</HintPath>
+    </Reference>
+    <Reference Include="pnunit.framework">
+      <HintPath>..\packages\NUnit.2.5.9.10348\lib\pnunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,15 +49,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aggregates\Aggregates.cs">
+    <Compile Include="Aggregates\Aggregates.cs" />
+    <Compile Include="Aggregates\Aggregates.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Aggregates.tt</DependentUpon>
     </Compile>
-    <Compile Include="Aggregates\Implementation\AccumulatingAggregationImpl.cs" />
+    <Compile Include="Aggregates\Implementation\AccumulatingAggregator.cs" />
     <Compile Include="Aggregates\Implementation\SerializationHelper.cs" />
-    <Compile Include="Aggregates\Implementation\CollectingAggregationImpl.cs" />
-    <Compile Include="Aggregates\Implementation\IUserDefinedAggregate.cs" />
+    <Compile Include="Aggregates\Implementation\ListAggregator.cs" />
+    <Compile Include="Aggregates\Implementation\IAggregator.cs" />
+    <Compile Include="Aggregates\Implementation\StringBuilderAggregator.cs" />
     <Compile Include="Aggregates\UserDefinedAggregates.cs" />
     <Compile Include="Functions\Functions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -59,8 +70,9 @@
   <ItemGroup>
     <None Include="Aggregates\Aggregates.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Aggregates.cs</LastGenOutput>
+      <LastGenOutput>Aggregates.generated.cs</LastGenOutput>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

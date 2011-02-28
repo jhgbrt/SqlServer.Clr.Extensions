@@ -73,7 +73,6 @@ CREATE AGGREGATE [Average](@input decimal)
 	EXTERNAL NAME [SqlServer.Clr.Extensions].[SqlServer.Clr.Extensions.Aggregates.Average]
 GO
 
-
 SELECT n from dbo.Range(1,10,2)
 
 select n FROM Split('a,b,c', ',')
@@ -93,7 +92,4 @@ SELECT dbo.BitwiseAnd(n) FROM (
 	) y
 GROUP BY x
 
-SELECT dbo.Average(n) FROM (
-	select 1 as x, convert(decimal, n) n FROM Split('3.5,4', ',')
-	) y
-GROUP BY x
+
